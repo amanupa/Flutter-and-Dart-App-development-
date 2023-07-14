@@ -1,332 +1,311 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import './store.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/rendering.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 void main(List<String> args) {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]).then((fn) {
-    runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyLogin(),
-    ));
-  });
+  runApp(
+    const MyApp(),
+  );
 }
 
-class MyLogin extends StatefulWidget {
-  const MyLogin({super.key});
+class MyApp extends StatelessWidget {
+  // Using "static" so that we can easily access it later
+  static final ValueNotifier<ThemeMode> themeNotifier =
+      ValueNotifier(ThemeMode.light);
 
-  @override
-  State<MyLogin> createState() => _MyLoginState();
-}
+  const MyApp({Key? key}) : super(key: key);
 
-class _MyLoginState extends State<MyLogin> {
-  final _formKey = GlobalKey<FormState>();
-  var userName = "";
-  bool _isObscure = true;
-
-  Color color = const Color(0xFFB74093);
   @override
   Widget build(BuildContext context) {
-    final mediquery = MediaQuery.of(context);
+    return ValueListenableBuilder<ThemeMode>(
+        valueListenable: themeNotifier,
+        builder: (_, ThemeMode currentMode, __) {
+          return MaterialApp(
+            // Remove the debug banner
+            debugShowCheckedModeBanner: false,
+            title: 'Kindacode.com',
+            theme: ThemeData(primarySwatch: Colors.yellow),
+            darkTheme: ThemeData.dark(),
+            themeMode: currentMode,
+            home: const slidingApp(),
+          );
+        });
+  }
+}
 
-    return LayoutBuilder(
-        builder: (context, constraints) => Scaffold(
-              //appBar: AppBar(),
-              body: Stack(children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                            "assets/images/Picsart_23-07-09_09-18-48-431.jpg"),
-                        fit: BoxFit.cover),
-                  ),
-                  height: constraints.maxHeight * 1,
-                  //height: MediaQuery.of(context).size.height * 1,
-                  //color: const Color.fromARGB(255, 187, 240, 250),
-                ),
-                Center(
-                  child: SizedBox(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight * 0.7,
-                    child: Card(
-                      margin: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                      elevation: 20,
+class slidingApp extends StatefulWidget {
+  const slidingApp({super.key});
 
-                      color: const Color.fromRGBO(52, 69, 86, 0.9),
-                      //color: const Color.fromRGBO(255, 187, 240, 0.7),
-                      child: GlassContainer(
-                        blur: double.infinity,
-                        opacity: 0.2,
-                        borderRadius: BorderRadius.circular(25),
-                        height: constraints.maxHeight,
-                        child: SingleChildScrollView(
-                          //physics: const NeverScrollableScrollPhysics(),
+  @override
+  State<slidingApp> createState() => _slidingAppState();
+}
 
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                child: Container(
-                                  margin:
-                                      const EdgeInsets.only(left: 26, top: 10),
-                                  child: const Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      color: Color.fromRGBO(154, 158, 162, 1),
-                                      shadows: <Shadow>[
-                                        Shadow(
-                                          offset: Offset(1.4, 1.4),
-                                          blurRadius: 15,
-                                        ),
-                                      ],
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: mediquery.size.height * 0.02,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: constraints.maxHeight * 0.08,
-                                    width: constraints.maxWidth * 0.85,
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      elevation: 20,
-                                      child: Form(
-                                        key: _formKey,
-                                        child: Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 20),
-                                          child: TextFormField(
-                                            decoration: const InputDecoration(
-                                              constraints: BoxConstraints(
-                                                  maxHeight: 60, maxWidth: 310),
-                                              isDense: true,
-                                              border: InputBorder.none,
-                                              label: Text(
-                                                "Email Address",
-                                                style: TextStyle(),
-                                              ),
-                                              labelStyle: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 18,
-                                                letterSpacing: 1,
-                                              ),
-                                            ),
-                                            onSaved: (value) {
-                                              userName = value!;
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.02,
-                                  ),
-                                  SizedBox(
-                                    height: constraints.maxHeight * 0.08,
-                                    width: constraints.maxWidth * 0.85,
-                                    child: Card(
-                                      //color: const Color.fromRGBO(255, 125, 200, 0.5),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      elevation: 20,
-                                      child: Form(
-                                        child: Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 20),
-                                          child: TextFormField(
-                                            obscureText: _isObscure,
-                                            decoration: InputDecoration(
-                                              suffixIcon: IconButton(
-                                                  icon: Icon(_isObscure
-                                                      ? Icons.visibility
-                                                      : Icons.visibility_off),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      _isObscure = !_isObscure;
-                                                    });
-                                                  }),
-                                              border: InputBorder.none,
-                                              label: const Text("Password"),
-                                              labelStyle: const TextStyle(
-                                                letterSpacing: 1,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.02,
-                                  ),
-                                  SizedBox(
-                                    width: 335,
-                                    height: 60,
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      elevation: 20,
-                                      color:
-                                          const Color.fromRGBO(97, 197, 201, 1),
-                                      child: TextButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          "LOGIN",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.01,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        // width: constraints.maxWidth * 0.4,
-                                        //margin: const EdgeInsets.only(
-                                        // right: 20),
-                                        child: TextButton(
-                                            onPressed: () {},
-                                            child: const Text(
-                                              "Forget Password ?",
-                                              style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                    97, 197, 201, 1),
-                                              ),
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.02,
-                                  ),
-                                  Container(
-                                    width: constraints.maxWidth,
-                                    margin: const EdgeInsets.only(
-                                        left: 5, right: 5),
-                                    child: const Center(
-                                      child: Text(
-                                        "------------------------or continue with------------------------",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color:
-                                              Color.fromRGBO(154, 158, 162, 1),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.02,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          color: Colors.white,
-                                          Icons.apple,
-                                          size: 50,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          color: Colors.white,
-                                          Icons.facebook,
-                                          size: 50,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          color: Colors.white,
-                                          Icons.g_mobiledata_outlined,
-                                          size: 50,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: mediquery.size.height * 0.01,
-                                  ),
-                                  Center(
-                                    child: Container(
-                                      width: constraints.maxWidth * 1,
-                                      margin: const EdgeInsets.all(14),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Text(
-                                            "Don't have a account?",
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: Color.fromRGBO(
-                                                  154, 158, 162, 1),
-                                            ),
-                                          ),
-                                          TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (_) {
-                                                        return const CreateAccount();
-                                                      },
-                                                    ),
-                                                  ),
-                                              child: const Text(
-                                                "Register Now",
-                                                style: TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      97, 197, 201, 1),
-                                                ),
-                                              ))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                            //),
-                          ),
+class _slidingAppState extends State<slidingApp> with TickerProviderStateMixin {
+  int activeIndex = 0;
+  final controlller =
+      CarouselController(); //this is a controller variable of a carouselcontroller class to controll the sliding effect, we can use this variable to controll the effects of sliding and assign to this any button to controll the sliding effect
+  animateToslide(int index) => controlller.animateToPage(index);
+  final imageList = [
+    "https://th.bing.com/th/id/OIP.vRbEf7cGdFda2LBP9yMP9AHaER?w=302&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+    "https://th.bing.com/th/id/OIP.SwYwwi-pKPGwJ4ong6bZ_wHaEK?w=265&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+    "https://th.bing.com/th/id/OIP.4GLBLAz94YgCvB2C6hRU3gHaEo?w=267&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+    "https://th.bing.com/th/id/OIP.b_MrNDt-VqNnlzswfkfF8QHaEo?w=267&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+    "https://th.bing.com/th/id/OIP.b_MrNDt-VqNnlzswfkfF8QHaEo?w=267&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
+  ];
+  late AnimationController controller;
+
+  @override
+  initState() {
+    super.initState();
+    controller = BottomSheet.createAnimationController(this);
+    // Animation duration for displaying the BottomSheet
+    controller.duration = const Duration(seconds: 1);
+    // Animation duration for retracting the BottomSheet
+    controller.reverseDuration = const Duration(seconds: 1);
+    // Set animation curve duration for the BottomSheet
+    controller.drive(CurveTween(curve: Curves.bounceOut));
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget buildImage(String url, int index) {
+      return SizedBox(
+        //width: 320,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            //shape: BoxShape.circle
+          ),
+          /*surfaceTintColor: const Color.fromARGB(255, 203, 14, 0),
+            color: Colors.blue,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+            elevation: 20,*/
+          margin: const EdgeInsets.symmetric(
+              horizontal: 0), //spacing between the images
+
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(40),
+            child: Image.network(
+              url,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget buldIndicator() {
+      return AnimatedSmoothIndicator(
+        activeIndex: activeIndex,
+        onDotClicked:
+            animateToslide, //this is for slide the page by tapping on the dots
+        count: imageList.length,
+        effect: const JumpingDotEffect(
+          dotHeight: 10,
+          dotWidth: 10,
+          dotColor: Color.fromRGBO(161, 191, 212, 1),
+          activeDotColor: Color.fromARGB(255, 19, 5, 150),
+        ),
+        /* effect: const SlideEffect(
+          spacing: 8.0,
+          radius: 10,
+          dotWidth: 24.0,
+          dotHeight: 16.0,
+          paintStyle: PaintingStyle.stroke,
+          strokeWidth: 1.5,
+          dotColor: Colors.grey,
+          activeDotColor: Colors.indigo,
+        ),*/
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Shop page",
+          style: TextStyle(
+            color: Color.fromRGBO(161, 191, 212, 1),
+          ),
+        ),
+        actions: [
+          IconButton(
+              icon: Icon(MyApp.themeNotifier.value == ThemeMode.light
+                  ? Icons.dark_mode
+                  : Icons.light_mode),
+              onPressed: () {
+                MyApp.themeNotifier.value =
+                    MyApp.themeNotifier.value == ThemeMode.light
+                        ? ThemeMode.dark
+                        : ThemeMode.light;
+              })
+        ],
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height * 1,
+        decoration: const BoxDecoration(
+            /* gradient: LinearGradient(
+            colors: [
+              //Color.fromARGB(255, 182, 65, 202),
+              //Colors.blueAccent,
+              Color.fromRGBO(161, 191, 212, 1),
+              Color.fromRGBO(165, 180, 190, 1),
+              Color.fromRGBO(168, 173, 176, 1)
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.4, 0.8, 0.9],
+            tileMode: TileMode.mirror,
+          ),*/
+
+            image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(
+                    "assets/images/Picsart_23-07-09_09-18-48-431.jpg"))),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.32,
+                margin: const EdgeInsets.only(top: 5),
+                child: Center(
+                  child: Stack(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CarouselSlider.builder(
+                        itemCount: imageList.length,
+                        options: CarouselOptions(
+                          initialPage:
+                              0, //setting the one page as a initial page any page can be the initial page by setting this
+                          // enlargeStrategy: CenterPageEnlargeStrategy.height,
+                          enlargeCenterPage: true,
+                          height: 246,
+
+                          enableInfiniteScroll:
+                              true, //means it stop the scrolling at the begning and end of the image
+                          //autoPlay: true,
+                          //pageSnapping: false,//means scrolling every pixel check it by make it true
+                          // reverse: true,
+                          autoPlayAnimationDuration: const Duration(seconds: 2),
+                          viewportFraction: 0.7,
+                          // 1, //setting how many images display on the display at a time
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              activeIndex = index;
+                            });
+                          },
                         ),
+                        itemBuilder: (context, index, realindex) {
+                          final urlImage = imageList[index];
+                          return buildImage(urlImage, index);
+                        },
                       ),
-                    ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(
+                            top: 215,
+                          ),
+                          child: Center(child: buldIndicator())),
+                    ],
                   ),
-                )
-              ]),
-            ));
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                  margin: const EdgeInsets.all(2),
+                  height: MediaQuery.of(context).size.height * 0.53,
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.9,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    shrinkWrap: true,
+                    children: List.generate(
+                      4,
+                      (index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                    "https://th.bing.com/th/id/OIP.vRbEf7cGdFda2LBP9yMP9AHaER?w=302&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7"),
+                                fit: BoxFit.fill,
+                              ),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20.0),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet<void>(
+            showDragHandle: true,
+            transitionAnimationController: controller,
+            // barrierColor: Colors.purpleAccent,
+            elevation: 20,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50),
+                topRight: Radius.circular(50),
+              ),
+            ),
+            backgroundColor: Colors.greenAccent,
+            // context and builder are
+            // required properties in this widget
+            context: context,
+            builder: (BuildContext context) {
+              // we set up a container inside which
+              // we create center column and display text
+
+              // Returning SizedBox instead of a Container
+              return ListView.builder(
+                  itemCount: 1,
+                  itemBuilder: (ctx, index) {
+                    return const ListTile();
+                  });
+              /*
+              Card(
+                color: Colors.greenAccent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(50),
+                        topRight: Radius.circular(50))),
+                //height: 200,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('GeeksforGeeks'),
+                    ],
+                  ),
+                ),
+              );*/
+            },
+          );
+        },
+        child: const Icon(Icons.keyboard_double_arrow_up_sharp),
+      ),
+    );
   }
 }
